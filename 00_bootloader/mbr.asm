@@ -21,14 +21,16 @@
 
 #define DATA(OFFSET) (DATA_START + OFFSET)
 
-#define BOOT_DRIVE DATA(0)
-
 #define BPB_END (BPB_START + BPB_SIZE)
 
 #define PARTITION_TABLE_OFFSET 0x1BE
 #define BOOT_SIGNATURE_OFFSET 0x1FE
 
 #define NOP 0x90
+
+/* Runtime data */
+
+#define BOOT_DRIVE DATA(0)
 
 /* Helper macros */
 
@@ -93,7 +95,6 @@ real_start:
     movw %ax, %ds
 
     /* Save boot drive reference (%dl) */
-    //xor %dh, %dh
     mov %dx, DATA_START
 
     /* Now, can be interrupted. */
@@ -106,7 +107,7 @@ real_start:
     /* Print boot drive number */
     PUTS s_boot_drive
     PUTC $' '
-    PUTX DATA_START
+    PUTX BOOT_DRIVE
     PUTNL
 
     /* Some tests  */
@@ -167,4 +168,4 @@ putx_out:
     .org BOOT_SIGNATURE_OFFSET, 0
 
     /* MBR signature */
-    .word 0xaa66
+    .word 0xaa55
