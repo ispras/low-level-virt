@@ -1,0 +1,1 @@
+set architecture i8086

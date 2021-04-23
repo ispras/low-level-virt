@@ -93,7 +93,7 @@ s_load_rodata:
 s_load_data:
     .asciz "Load .data "
 s_start_main:
-    .asciz "Start main\r\n"
+    .asciz "Starting main at 0x"
 
 /* Bootloader code */
 
@@ -113,7 +113,6 @@ real_start:
     movw %ax, %ds
 
     /* Save boot drive reference (%dl) */
-    //xor %dh, %dh
     mov %dx, DATA_START
 
     /* Now, can be interrupted. */
@@ -175,6 +174,13 @@ real_start:
 
     /* starting main */
     PUTS(s_start_main)
+
+    movw $(MAIN), %ax
+
+    push %ax
+    call putx
+    PUTNL
+    pop %ax
 
     call MAIN
 

@@ -2,6 +2,8 @@
 *.bin
 *.o
 *.disas
+*.S
 readme.html
 loader-params.h
 loader.S
+qemu.log
