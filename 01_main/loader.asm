@@ -204,7 +204,7 @@ read_serctors:
     movw $(CACHE), %si
     movw %ax, %ds
 
-    movw $512, %cx
+    movw $(512 / 4), %cx
     rep movsd
 
     movw %di, DST_ADDR
