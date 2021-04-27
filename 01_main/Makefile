@@ -74,7 +74,7 @@ all: readme.html
 
 .PHONY: clean
 clean:
-	rm -f main.16.o main.16.elf main.disas \
+	rm -f main.16.o main.16.elf main.disas main.S \
 	      main.16.text.bin main.16.rodata.bin main.16.data.bin \
 	      loader-params.h loader.S \
 	      loader.16.o loader.16.elf loader.disas \
