@@ -1,4 +1,4 @@
-__asm__(".code16\n");
+#include "vga.h"
 
 static char vga_text_color;
 short *vga_text_pos;
@@ -24,23 +24,14 @@ typedef enum {
 } VGATextColor;
 
 
-void vga_set_blink(int blink)
-{
-    if (blink) {
-        vga_text_color |= 8;
-    } else {
-        vga_text_color &= ~8;
-    }
-}
-
-void vga_set_foreground(VGATextColor color)
+static void vga_set_foreground(VGATextColor color)
 {
     color &= 0xF;
     vga_text_color &= 0xF0;
     vga_text_color |= color;
 }
 
-void vga_set_background(VGATextColor color)
+static void vga_set_background(VGATextColor color)
 {
     color &= 0x7;
     color <<= 4;
@@ -48,16 +39,14 @@ void vga_set_background(VGATextColor color)
     vga_text_color |= color;
 }
 
-
-void vga_reset(void)
+static void vga_reset(void)
 {
     vga_text_pos = (short *) 0xB8000;
-    vga_set_blink(0);
     vga_set_foreground(WHITE);
     vga_set_background(BLACK);
 }
 
-void vga_puts(const char *s)
+static void vga_puts(const char *s)
 {
     /* VGA text buffer is at 0xB8000.
      * It's addressed as 0B80:vga_text_pos, i.e. DS = 0B80.
@@ -69,16 +58,9 @@ void vga_puts(const char *s)
     }
 }
 
-void main(void)
+void protected(void)
 {
     vga_reset();
 
-    vga_puts("white ");
-
-    vga_set_background(LIGHT_GRAY);
-    vga_set_foreground(DARK_GRAY);
-    vga_puts("black ");
-
-    vga_set_blink(1);
-    vga_puts("blink ");
+    vga_puts("Protected mode\n");
 }
