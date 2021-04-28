@@ -265,8 +265,10 @@ mainloop:
 
     /* Print interrupt information */
 
-.macro PRINT_INT_INFO PRETTY, ORIG_CS, ORIG_IP, CNT, LABEL
+.macro PRINT_INT_INFO N, PRETTY, ORIG_CS, ORIG_IP, CNT, LABEL
 \LABEL: /* The label is for debug purposess. */
+    VGA_PUTU $(\N)
+    VGA_PUTC $' '
     VGA_PUTS $(\PRETTY)
     VGA_PUTS $s_handler
     VGA_PUTX \ORIG_CS
@@ -278,7 +280,7 @@ mainloop:
 .endm
 
 #define VEC(N, MNEMONIC, PRETTY) \
-    PRINT_INT_INFO s_vec##N, vec_##N##_orig_cs, \
+    PRINT_INT_INFO N, s_vec##N, vec_##N##_orig_cs, \
                    vec_##N##_orig_ip, vec_##N##_cnt, print_##N
 #include "vectors.inc"
 #undef VEC
