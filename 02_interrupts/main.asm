@@ -295,7 +295,6 @@ mainloop:
 
 .macro INT_INTERCEPTOR NAME, CNT, ORIG_CS, ORIG_IP
 \NAME:
-    cli
     incw \CNT
     /* Call original handler (BIOS) */
     ljmp \ORIG_IP
