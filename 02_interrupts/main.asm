@@ -181,33 +181,20 @@ vga_putu:
     VGA_PUTC $'0'
     jmp vga_putu_out
 vga_putu_recursion:
-    push %ax
-
-    push %dx
     xor %dx, %dx
-
-    push %cx
     mov $10, %cx
 
-    div %cx
+    div %cx /* Quotient: %ax, Remainder: %dx */
 
-    pop %cx
-    pop %dx
+    push %dx /* preserve remainder */
 
     orw %ax, %ax
     jz vga_putu_recursion_end
+
     call vga_putu_recursion
 
 vga_putu_recursion_end:
-    pop %ax
-
-    push %cx
-    mov $10, %cl
-    div %cl
-
-    pop %cx
-
-    shr $8, %ax /* reminder in %ah */
+    pop %ax /* remainder */
 
     add $'0', %al
     call vga_putc
