@@ -20,6 +20,7 @@ loader-params.h: main.16.text.bin main.16.rodata.bin main.16.data.bin \
 	echo "#define MAIN 0x$(shell ${GET_MAIN_CMD})" \
 	    >> loader-params.h
 
+loader.S: ../common/i8086/bios-io.asm.inc
 loader.S: loader-params.h
 loader.S: CPPFLAGS+=-DBPB_SIZE=0
 
