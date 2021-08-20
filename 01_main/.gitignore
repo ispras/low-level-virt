@@ -3,4 +3,3 @@
 *.o
 *.disas
 *.S
-loader-params.h

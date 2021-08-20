@@ -8,20 +8,22 @@ GET_MAIN_CMD:= \
   | grep ' main$$' \
   | sed -e 's/.*: \+0*\([^ ]*\).*/\1/'
 
-loader-params.h: main.16.text.bin main.16.rodata.bin main.16.data.bin \
+.PHONY: loader-params
+loader-params: main.16.text.bin main.16.rodata.bin main.16.data.bin \
                  main.16.elf
-	echo "/* Auto generated. Don't modify. */" > loader-params.h
-	echo "#define TEXT_SIZE $(shell stat -c %s main.16.text.bin)" \
-	    >> loader-params.h
-	echo "#define RODATA_SIZE $(shell stat -c %s main.16.rodata.bin)" \
-	    >> loader-params.h
-	echo "#define DATA_SIZE $(shell stat -c %s main.16.data.bin)" \
-	    >> loader-params.h
-	echo "#define MAIN 0x$(shell ${GET_MAIN_CMD})" \
-	    >> loader-params.h
+	$(eval TEXT_SIZE:=$(shell stat -c %s main.16.text.bin))
+	$(eval RODATA_SIZE:=$(shell stat -c %s main.16.rodata.bin))
+	$(eval DATA_SIZE:=$(shell stat -c %s main.16.data.bin))
+	$(eval MAIN:=0x$(shell ${GET_MAIN_CMD}))
 
-loader.S: loader-params.h
-loader.S: CPPFLAGS+=-DBPB_SIZE=0
+loader.S: ../01_main/loader.asm
+loader.S: ../common/i8086/bios-io.asm.inc
+loader.S: loader-params
+loader.S: CPPFLAGS+=-DBPB_SIZE=0 \
+	-DTEXT_SIZE=${TEXT_SIZE} \
+	-DRODATA_SIZE=${RODATA_SIZE} \
+	-DDATA_SIZE=${DATA_SIZE} \
+	-DMAIN=${MAIN}
 
 loader.16.elf: loader.16.o
 	ld -Ttext 0x7c00 -o $@ $<
@@ -41,6 +43,6 @@ all: loader.disas
 local-clean:
 	rm -f main.16.o main.16.elf main.S \
 	      main.16.text.bin main.16.rodata.bin main.16.data.bin \
-	      loader-params.h loader.S \
+	      loader.S \
 	      loader.16.o loader.16.elf loader.disas \
 	      loader.16.text.bin \

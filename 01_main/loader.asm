@@ -1,6 +1,18 @@
-/* Externally definable parameters */
+#ifndef TEXT_SIZE
+#error Must define TEXT_SIZE
+#endif /* TEXT_SIZE */
 
-#include "loader-params.h"
+#ifndef RODATA_SIZE
+#error Must define RODATA_SIZE
+#endif /* RODATA_SIZE */
+
+#ifndef DATA_SIZE
+#error Must define DATA_SIZE
+#endif /* DATA_SIZE */
+
+#ifndef MAIN
+#error Must define MAIN as 0xADDR
+#endif /* MAIN */
 
 #ifndef BPB_START
 #define BPB_START 0x0B
