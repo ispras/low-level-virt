@@ -32,27 +32,6 @@
 
 #define BOOT_DRIVE DATA(0)
 
-/* Helper macros */
-
-.macro PUTS STR
-    leaw \STR, %si
-    call puts
-.endm
-
-.macro PUTX HEX
-    mov \HEX, %ax
-    call putx
-.endm
-
-.macro PUTC CHAR
-    mov \CHAR, %al
-    call putc
-.endm
-
-.macro PUTNL
-    PUTS s_nl
-.endm
-
 /* Start of MBR */
 
 .text
@@ -74,8 +53,10 @@ s_bootloader:
     .asciz "Bootloader"
 s_boot_drive:
     .asciz "Boot drive:"
-s_nl:
-    .asciz "\r\n"
+
+/* Helper code */
+
+#include "../common/i8086/bios-io.asm.inc"
 
 /* Bootloader code */
 
@@ -120,46 +101,6 @@ real_start:
 
 loop:
     jmp loop
-
-/* Helper functions */
-putc:
-    movb $0x0e, %ah
-    int $0x10
-    ret
-
-puts:
-    lodsb
-    orb %al, %al
-    jz puts_out
-    call putc
-    jmp puts
-puts_out:
-    ret
-
-putx:
-    orw %ax, %ax
-    jnz putx_recursion
-    PUTC $'0'
-    jmp putx_out
-putx_recursion:
-    push %ax
-    shr $4, %ax
-    orw %ax, %ax
-    jz putx_recursion_end
-    call putx_recursion
-putx_recursion_end:
-    pop %ax
-    andb $0xF, %al
-    cmp $9, %al
-    jg putx_high
-    add $'0', %al
-    call putc
-    jmp putx_out
-putx_high:
-    add $('A' - 10), %al
-    call putc
-putx_out:
-    ret
 
     /* Not used space */
     .org PARTITION_TABLE_OFFSET, NOP
