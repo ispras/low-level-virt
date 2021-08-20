@@ -9,6 +9,10 @@ vga_text_pos:
     call vga_reset
 .endm
 
+.macro VGA_CLEAR
+    call vga_clear
+.endm
+
 .macro VGA_SET_FG COLOR
     mov \COLOR, %ax
     call vga_set_foreground
@@ -19,9 +23,29 @@ vga_text_pos:
     call vga_set_background
 .endm
 
+.macro VGA_PUTC C
+    mov \C, %al
+    call vga_putc
+.endm
+
+.macro VGA_NL
+    VGA_PUTC $'\r'
+    VGA_PUTC $'\n'
+.endm
+
 .macro VGA_PUTS STR
     mov \STR, %bx
     call vga_puts
+.endm
+
+.macro VGA_PUTX X
+    mov \X, %ax
+    call vga_putx
+.endm
+
+.macro VGA_PUTU U
+    mov \U, %ax
+    call vga_putu
 .endm
 
 .macro VGA_PUTS_COLORED COLOR, STR
@@ -60,6 +84,17 @@ vga_reset:
     VGA_SET_FG $(VGA_WHITE)
     VGA_SET_BG $(VGA_BLACK)
 
+    ret
+
+
+vga_clear:
+    mov vga_text_color, %ah
+    mov $' ', %al
+    mov $(24 * 80), %cx
+    push $0xb800
+    pop %es
+    xor %di, %di
+    rep stosw
     ret
 
 
@@ -123,4 +158,58 @@ vga_puts:
     call vga_putc
     jmp vga_puts
 vga_puts_ret:
+    ret
+
+
+vga_putx:
+    orw %ax, %ax
+    jnz vga_putx_recursion
+    VGA_PUTC $'0'
+    jmp vga_putx_out
+vga_putx_recursion:
+    push %ax
+    shr $4, %ax
+    orw %ax, %ax
+    jz vga_putx_recursion_end
+    call vga_putx_recursion
+vga_putx_recursion_end:
+    pop %ax
+    andb $0xF, %al
+    cmp $9, %al
+    jg vga_putx_high
+    add $'0', %al
+    call vga_putc
+    jmp vga_putx_out
+vga_putx_high:
+    add $('A' - 10), %al
+    call vga_putc
+vga_putx_out:
+    ret
+
+
+vga_putu:
+    orw %ax, %ax
+    jnz vga_putu_recursion
+    VGA_PUTC $'0'
+    jmp vga_putu_out
+vga_putu_recursion:
+    xor %dx, %dx
+    mov $10, %cx
+
+    div %cx /* Quotient: %ax, Remainder: %dx */
+
+    push %dx /* preserve remainder */
+
+    orw %ax, %ax
+    jz vga_putu_recursion_end
+
+    call vga_putu_recursion
+
+vga_putu_recursion_end:
+    pop %ax /* remainder */
+
+    add $'0', %al
+    call vga_putc
+
+vga_putu_out:
     ret

@@ -26,7 +26,7 @@ loader.S: CPPFLAGS+=-DBPB_SIZE=0
 loader.16.elf: loader.16.o
 	ld -Ttext 0x7c00 -o $@ $<
 
-main.S: vga.h vectors.inc
+main.S: ../common/vga.h vectors.inc ../common/i8086/vga.asm.inc
 
 # Parts are block aligned.
 main.bin: loader.16.text.bin \
