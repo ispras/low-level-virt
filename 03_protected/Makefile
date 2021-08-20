@@ -32,7 +32,9 @@ loader.S: CPPFLAGS+=-DBPB_SIZE=0 \
 loader.16.elf: loader.16.o
 	ld -melf_i386 -Ttext 0x7c00 -o $@ $<
 
-main.S: vga.h
+main.S: ../common/vga.h ../common/i8086/vga.asm.inc
+
+protected.32.o: ../common/vga.h
 
 # Parts are block aligned.
 main.bin: loader.16.text.bin \

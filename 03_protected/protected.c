@@ -1,4 +1,4 @@
-#include "vga.h"
+#include "../common/vga.h"
 
 static char vga_text_color;
 short *vga_text_pos;
