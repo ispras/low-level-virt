@@ -1,6 +1,2 @@
-mbr.bin
-mbr.disas
-mbr.elf
-mbr.o
-readme.html
-
+main.16.elf
+mbr.16.o
