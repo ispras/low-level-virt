@@ -33,6 +33,7 @@ loader.16.elf: loader.16.o
 	ld -melf_i386 -Ttext 0x7c00 -o $@ $<
 
 main.S: ../common/vga.h ../common/i8086/vga.asm.inc
+main.S: ../common/i8086/a20.asm.inc
 
 protected.32.o: ../common/vga.h
 
