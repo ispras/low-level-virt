@@ -144,6 +144,7 @@ mainloop:
     testb $0xFF, exit
     jz mainloop
 
+.globl infloop
 infloop:
     hlt
     jmp infloop
