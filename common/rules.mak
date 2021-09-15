@@ -1,16 +1,18 @@
 all:
 .PHONY: all
 
+AS=as ${ASFLAGS}
+
 # .asm files are .S files with C preprocessor macroses
 %.S: %.asm
 	cpp ${CPPFLAGS} $< > $@
 
 # objects from assembly
 %.16.o: %.S
-	as -o $@ $<
+	${AS} -o $@ $<
 
 %.32.o: %.S
-	as -o $@ $<
+	${AS} -o $@ $<
 
 # objects from C
 %.32.o: %.c

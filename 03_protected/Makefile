@@ -2,7 +2,7 @@ include ../common/rules.mak
 
 %.16.o: %.S
 	# --32 is used to make ld happy, real code archtecture is set using .code16
-	as --32 -o $@ $<
+	${AS} --32 -o $@ $<
 
 main.16.elf: main.16.o protected.32.o main.ld
 	ld -melf_i386 -static -Tmain.ld -nostdlib --nmagic -o $@ $^
