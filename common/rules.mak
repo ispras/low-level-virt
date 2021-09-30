@@ -78,6 +78,13 @@ debug: qemu-gdb main.16.elf
 	    --symbols main.16.elf \
 	    -ex 'target remote localhost:1234' \
 
+debug.log: main.16.elf main.bin
+	qemu-system-i386 -d in_asm,exec,cpu,int -D $@ -s -S -hda main.bin &
+	gdb \
+	    -ix common/gdbinit.i8086 \
+	    --symbols main.16.elf \
+	    -ex 'target remote localhost:1234' \
+
 # default cleaning
 .PHONY: clean local-clean
 clean: local-clean
