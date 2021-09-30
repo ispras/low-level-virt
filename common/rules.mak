@@ -49,6 +49,9 @@ AS=as ${ASFLAGS}
 %.html: %.md
 	pandoc -o $@ $<
 
+%.html: %.rst
+	pandoc -o $@ $<
+
 # testing in Qemu
 .PHONY: qemu
 qemu: main.bin
