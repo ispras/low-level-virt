@@ -1,28 +1,10 @@
 #include "../common/vga.h"
+#include "../common/types.h"
 
-static char vga_text_color;
-short *vga_text_pos;
+typedef u8 VGATextColor;
 
-typedef enum {
-    BLACK = 0,
-    BLUE,
-    GREEN,
-    CYAN,
-    RED,
-    MAGENTA,
-    BROWN,
-    LIGHT_GRAY,
-    /* Foreground color only */
-    DARK_GRAY,
-    LIGHT_BLUE,
-    LIGHT_GREEN,
-    LIGHT_CYAN,
-    LIGHT_RED,
-    PINK,
-    YELLOW,
-    WHITE
-} VGATextColor;
-
+extern VGATextColor vga_text_color;
+extern u16 vga_text_pos;
 
 static void vga_set_foreground(VGATextColor color)
 {
@@ -39,28 +21,25 @@ static void vga_set_background(VGATextColor color)
     vga_text_color |= color;
 }
 
-static void vga_reset(void)
-{
-    vga_text_pos = (short *) 0xB8000;
-    vga_set_foreground(WHITE);
-    vga_set_background(BLACK);
-}
-
 static void vga_puts(const char *s)
 {
     /* VGA text buffer is at 0xB8000.
-     * It's addressed as 0B80:vga_text_pos, i.e. DS = 0B80.
+     * In real mode it's addressed as 0B80:vga_text_pos, i.e. DS = 0B80.
+     * But, it's in protected mode.
      * */
 
+    u16 c = (((u16) vga_text_color) << 8);
+
     while (*s) {
-        *vga_text_pos = ((short) *s) | (((short) vga_text_color) << 8);
+        *(u16 *)(0xB8000 + vga_text_pos) = ((u16) *s) | c;
+        vga_text_pos += 2;
         s++;
     }
 }
 
 void protected(void)
 {
-    vga_reset();
-
-    vga_puts("Protected mode\n");
+    vga_set_foreground(VGA_RED);
+    vga_set_background(VGA_LIGHT_GREEN);
+    vga_puts("Protected mode");
 }

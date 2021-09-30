@@ -1,7 +1,7 @@
 include ../common/rules.mak
 
+# --32 is used to make ld happy, real code archtecture is set using .code16
 %.16.o: %.S
-	# --32 is used to make ld happy, real code archtecture is set using .code16
 	${AS} --32 -o $@ $<
 
 main.16.elf: main.16.o protected.32.o main.ld
@@ -36,6 +36,7 @@ main.S: ../common/vga.h ../common/i8086/vga.asm.inc
 main.S: ../common/i8086/a20.asm.inc
 
 protected.32.o: ../common/vga.h
+protected.32.o: ../common/types.h
 
 # Parts are block aligned.
 main.bin: loader.16.text.bin \
@@ -45,7 +46,7 @@ main.bin: loader.16.text.bin \
 	dd if=main.16.rodata.bin bs=512 of=$@ oflag=append conv=notrunc,sync
 	dd if=main.16.data.bin bs=512 of=$@ oflag=append conv=notrunc,sync
 
-all: loader.disas protected.disas
+all: loader.disas
 
 local-clean:
 	rm -f main.16.o main.16.elf main.S \
@@ -53,4 +54,4 @@ local-clean:
 	      loader.S \
 	      loader.16.o loader.16.elf loader.disas \
 	      loader.16.text.bin \
-	      protected.32.o protected.disas \
+	      protected.32.o \
