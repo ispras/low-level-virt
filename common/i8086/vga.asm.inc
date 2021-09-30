@@ -1,6 +1,10 @@
 .data
+
+.globl vga_text_color
 vga_text_color:
     .byte 0
+
+.globl vga_text_pos
 vga_text_pos:
     .word 0
 
